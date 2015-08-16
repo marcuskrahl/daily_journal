@@ -1,6 +1,7 @@
 from django.core.urlresolvers import resolve
 from django.test import TestCase
 from journal.views import home_page
+from django.http import HttpRequest
 
 class HomePageTest(TestCase):
 
@@ -11,6 +12,6 @@ class HomePageTest(TestCase):
     def test_home_page_returns_correct_html(self):
         request = HttpRequest()
         response = home_page(request)
-        self.assertTrue(response.content.startsWith(b'<html>'))
+        self.assertTrue(response.content.startswith(b'<html>'))
         self.assertIn(b'<title>Daily Journal</title>',response.content)
-        self.assertTrue(response.content.endsWith(b'</html>'))
+        self.assertTrue(response.content.endswith(b'</html>'))
