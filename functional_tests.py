@@ -11,6 +11,11 @@ class NewJournalEntryTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def check_for_entry_in_entries(self, entry_text):
+        entries = self.browser.find_elements_by_css_selector('p.entry')
+        self.assertIn(entry_text, [entry.text for entry in entries])
+
+
     def test_can_write_daily_entry_and_retrieve_it_later(self): 
         # Anne wants to write her daily journal entry. She goes to the homepage
         self.browser.get('http://localhost:8000')
@@ -33,18 +38,16 @@ class NewJournalEntryTest(unittest.TestCase):
 
         # When she sends the entry, the page updates and her entry is shown as commited
         send_button.click()
-        
-        entries = self.browser.find_elements_by_css_selector('p.entry')
-        self.assertIn('This is my brand new diary entry', [entry.text for entry in entries])
+        self.check_for_entry_in_entries('This is my brand new diary entry')
         
         # She is refreshing the page, her entry is still there
         self.browser.get('http://localhost:8000')
+        self.check_for_entry_in_entries('This is my brand new diary entry')
 
-        entries = self.browser.find_elements_by_css_selector('p.entry')
-        self.assertIn('This is my brand new diary entry', [entry.text for entry in entries])
 
         # Satisfied, she closes the browser
         self.fail("Finish test")
+
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
