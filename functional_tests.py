@@ -38,9 +38,13 @@ class NewJournalEntryTest(unittest.TestCase):
         self.assertIn('This is my brand new diary entry', [entry.text for entry in entries])
         
         # She is refreshing the page, her entry is still there
-        self.fail("Finish test")
+        self.browser.get('http://localhost:8000')
+
+        entries = self.browser.find_elements_by_css_selector('p.entry')
+        self.assertIn('This is my brand new diary entry', [entry.text for entry in entries])
 
         # Satisfied, she closes the browser
+        self.fail("Finish test")
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
