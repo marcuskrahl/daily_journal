@@ -29,13 +29,13 @@ class NewJournalEntryTest(unittest.TestCase):
         
         # There is a button to submit the entry
         send_button = self.browser.find_element_by_id('id_submit_journal_entry')
-        self.assertEqual(send_button.text,'Submit')
+        self.assertEqual(send_button.get_attribute('value'),'Submit')
 
         # When she sends the entry, the page updates and her entry is shown as commited
         send_button.click()
         
-        first_entry = self.browser.find_element_by_css_selector('p.entry')
-        self.assertEqual(first_entry.text, 'This is my brand new diary entry')
+        entries = self.browser.find_elements_by_css_selector('p.entry')
+        self.assertIn('This is my brand new diary entry', [entry.text for entry in entries])
         
         # She is refreshing the page, her entry is still there
         self.fail("Finish test")

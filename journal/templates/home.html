@@ -5,8 +5,11 @@
     </head>
     <body>
         <h1>Daily Journal</h1>
-        <textarea id="id_new_journal_entry" placeholder="Enter a new journal entry"></textarea>
-        <button id="id_submit_journal_entry">Submit</button>
-        <p class="entry"></p>
+        <form method="POST">
+            <textarea name="entry_text" id="id_new_journal_entry" placeholder="Enter a new journal entry"></textarea>
+            <input type="submit" id="id_submit_journal_entry" value="Submit"/>
+            {% csrf_token %}
+        </form>
+        <p class="entry">{{journal_entry_text}}</p>
     </body>
 </html>
