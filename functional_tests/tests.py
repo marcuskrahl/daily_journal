@@ -1,8 +1,8 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
-import unittest
 from selenium.webdriver.common.keys import Keys
 
-class NewJournalEntryTest(unittest.TestCase):
+class NewJournalEntryTest(LiveServerTestCase):
     
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -18,7 +18,7 @@ class NewJournalEntryTest(unittest.TestCase):
 
     def test_can_write_daily_entry_and_retrieve_it_later(self): 
         # Anne wants to write her daily journal entry. She goes to the homepage
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # She notices the page title and header mention the daily journal
         self.assertIn('Daily Journal', self.browser.title)
@@ -41,13 +41,9 @@ class NewJournalEntryTest(unittest.TestCase):
         self.check_for_entry_in_entries('This is my brand new diary entry')
         
         # She is refreshing the page, her entry is still there
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
         self.check_for_entry_in_entries('This is my brand new diary entry')
 
 
         # Satisfied, she closes the browser
         self.fail("Finish test")
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
