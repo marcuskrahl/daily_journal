@@ -23,9 +23,25 @@ class HomePageTest(TestCase):
         request.POST["entry_text"] = "A new journal entry"
 
         response = home_page(request)
-        self.assertIn('A new journal entry',response.content.decode())
-        expected_html = render_to_string('home.html', {'journal_entry_text': 'A new journal entry'})
-        self.assertEqual(response.content.decode(), expected_html)
+
+        self.assertEqual(JournalEntry.objects.count(),1)
+        new_journal_entry = JournalEntry.objects.first()
+        self.assertEqual(new_journal_entry.text, 'A new journal entry')
+    
+    def test_home_page_redirects_after_POST(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST["entry_text"] = "A new journal entry"
+
+        response = home_page(request)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_home_page_only_saves_items_when_necessary(self):
+        request = HttpRequest()
+        home_page(request)
+        self.assertEqual(JournalEntry.objects.count(), 0)
 
 class JournalEntryModelTest(TestCase):
 

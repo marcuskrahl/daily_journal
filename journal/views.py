@@ -1,8 +1,10 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render,redirect
+from journal.models import JournalEntry
 
 # Create your views here.
 def home_page(request):
-    return render(request, 'home.html', {
-        'journal_entry_text': request.POST.get('entry_text','')
-    })
+    if request.method == 'POST':
+        JournalEntry.objects.create(text=request.POST['entry_text'])
+        return redirect('/')
+
+    return render(request, 'home.html')
