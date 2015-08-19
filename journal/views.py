@@ -7,4 +7,5 @@ def home_page(request):
         JournalEntry.objects.create(text=request.POST['entry_text'])
         return redirect('/')
 
-    return render(request, 'home.html')
+    journal_entries = JournalEntry.objects.all()
+    return render(request, 'home.html', {'journal_entries': journal_entries})

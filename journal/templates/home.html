@@ -10,6 +10,8 @@
             <input type="submit" id="id_submit_journal_entry" value="Submit"/>
             {% csrf_token %}
         </form>
-        <p class="entry">{{journal_entry_text}}</p>
+        {% for journal_entry in journal_entries %}
+            <p class="entry">{{journal_entry.text}}</p>
+        {% endfor %}
     </body>
 </html>

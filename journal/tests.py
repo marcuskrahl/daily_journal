@@ -43,6 +43,16 @@ class HomePageTest(TestCase):
         home_page(request)
         self.assertEqual(JournalEntry.objects.count(), 0)
 
+    def test_home_page_displays_all_journal_entries(self):
+        JournalEntry.objects.create(text='journal entry 1')
+        JournalEntry.objects.create(text='journal entry 2')
+
+        request = HttpRequest()
+        response = home_page(request)
+
+        self.assertIn('journal entry 1',response.content.decode())
+        self.assertIn('journal entry 2',response.content.decode())
+
 class JournalEntryModelTest(TestCase):
 
     def test_saving_and_retrieving_journal_entries(self):
