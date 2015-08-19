@@ -18,37 +18,27 @@ class HomePageTest(TestCase):
         self.assertEqual(response.content.decode(),expected_html)
 
     def test_home_page_can_save_a_POST_request(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST["entry_text"] = "A new journal entry"
-
-        response = home_page(request)
+        response = self.client.post('/',{'entry_text':'A new journal entry'})
 
         self.assertEqual(JournalEntry.objects.count(),1)
         new_journal_entry = JournalEntry.objects.first()
         self.assertEqual(new_journal_entry.text, 'A new journal entry')
     
     def test_home_page_redirects_after_POST(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST["entry_text"] = "A new journal entry"
-
-        response = home_page(request)
+        response = self.client.post('/',{'entry_text':'A new journal entry'})
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], 'http://testserver/')
 
     def test_home_page_only_saves_items_when_necessary(self):
-        request = HttpRequest()
-        home_page(request)
+        response = self.client.get('/')
         self.assertEqual(JournalEntry.objects.count(), 0)
 
     def test_home_page_displays_all_journal_entries(self):
         JournalEntry.objects.create(text='journal entry 1')
         JournalEntry.objects.create(text='journal entry 2')
 
-        request = HttpRequest()
-        response = home_page(request)
+        response = self.client.get('/')
 
         self.assertIn('journal entry 1',response.content.decode())
         self.assertIn('journal entry 2',response.content.decode())
