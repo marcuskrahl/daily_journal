@@ -1,6 +1,7 @@
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from datetime import date
 
 class NewJournalEntryTest(LiveServerTestCase):
     
@@ -11,9 +12,17 @@ class NewJournalEntryTest(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def check_for_entry_in_entries(self, entry_text):
-        entries = self.browser.find_elements_by_css_selector('p.entry')
+
+    def get_entry_elements(self,subclass):
+        return self.browser.find_elements_by_css_selector('p.entry '+subclass)
+
+    def check_for_entry_text_in_entries(self, entry_text):
+        entries = self.get_entry_elements('.entry-text')
         self.assertIn(entry_text, [entry.text for entry in entries])
+
+    def check_for_entry_date_in_entries(self, entry_date):
+        entries = self.get_entry_elements('.entry-date')
+        self.assertIn(entry_date, [entry.text for entry in entries])
 
 
     def test_can_write_daily_entry_and_retrieve_it_later(self): 
@@ -38,12 +47,12 @@ class NewJournalEntryTest(LiveServerTestCase):
 
         # When she sends the entry, the page updates and her entry is shown as commited
         send_button.click()
-        self.check_for_entry_in_entries('This is my brand new diary entry')
+        self.check_for_entry_text_in_entries('This is my brand new diary entry')
         
+        #The entry displays the correct creation date
+        correct_date = date.today().isoformat()
+        self.check_for_entry_date_in_entries(correct_date)
+
         # She is refreshing the page, her entry is still there
         self.browser.get(self.live_server_url)
-        self.check_for_entry_in_entries('This is my brand new diary entry')
-
-
-        # Satisfied, she closes the browser
-        self.fail("Finish test")
+        self.check_for_entry_text_in_entries('This is my brand new diary entry')
