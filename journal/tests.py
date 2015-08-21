@@ -40,8 +40,8 @@ class HomePageTest(TestCase):
 
         response = self.client.get('/')
 
-        self.assertIn('journal entry 1',response.content.decode())
-        self.assertIn('journal entry 2',response.content.decode())
+        self.assertContains(response,'journal entry 1')
+        self.assertContains(response,'journal entry 2')
 
 class JournalEntryModelTest(TestCase):
 
