@@ -24,9 +24,7 @@ class HomePageTest(TestCase):
     
     def test_home_page_redirects_after_POST(self):
         response = self.client.post('/',{'entry_text':'A new journal entry'})
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], 'http://testserver/')
+        self.assertRedirects(response, '/')
 
     def test_home_page_only_saves_items_when_necessary(self):
         response = self.client.get('/')
