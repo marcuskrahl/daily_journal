@@ -24,6 +24,12 @@ class NewJournalEntryTest(LiveServerTestCase):
         entries = self.get_entry_elements('.entry-date')
         self.assertIn(entry_date, [entry.text for entry in entries])
 
+    def get_journal_entry_input(self):
+        return self.browser.find_element_by_id('id_new_journal_entry')
+
+    def get_journal_entry_send_button(self):
+        return self.browser.find_element_by_id('id_submit_journal_entry')
+
 
     def test_can_write_daily_entry_and_retrieve_it_later(self): 
         # Anne wants to write her daily journal entry. She goes to the homepage
@@ -35,14 +41,14 @@ class NewJournalEntryTest(LiveServerTestCase):
         self.assertIn('Daily Journal', header_text)
 
         # She has the option to enter her journal entry
-        inputbox = self.browser.find_element_by_id('id_new_journal_entry')
+        inputbox = self.get_journal_entry_input()
         self.assertEqual(inputbox.get_attribute('placeholder'),'Enter a new journal entry')
 
         # She types her journal entry
         inputbox.send_keys('This is my brand new diary entry')
         
         # There is a button to submit the entry
-        send_button = self.browser.find_element_by_id('id_submit_journal_entry')
+        send_button = self.get_journal_entry_send_button()
         self.assertEqual(send_button.get_attribute('value'),'Submit')
 
         # When she sends the entry, the page updates and her entry is shown as commited
@@ -56,3 +62,34 @@ class NewJournalEntryTest(LiveServerTestCase):
         # She is refreshing the page, her entry is still there
         self.browser.get(self.live_server_url)
         self.check_for_entry_text_in_entries('This is my brand new diary entry')
+
+    def test_can_write_multiple_journal_entries(self):
+        # Anne wants to write her first daily journal entry. She goes to the homepage
+        self.browser.get(self.live_server_url)
+
+        # She enters her first journal entry
+        inputbox = self.get_journal_entry_input()
+        inputbox.send_keys('This is my first journal entry')
+
+        # There is a button to submit the entry
+        send_button = self.get_journal_entry_send_button()
+
+        # When she sends the entry, the page updates and her entry is shown as commited
+        send_button.click()
+        self.check_for_entry_text_in_entries('This is my first journal entry')
+
+        # She wants to add another entry, but she can't because she already wrote one for today
+        inputbox = self.get_journal_entry_input()
+        self.assertIsNone(inputbox)
+        send_button = self.get_journal_entry_send_button()
+        self.assertIsNone(send_button)
+
+        # Anne is waiting another day to write a new journal entry. Now she can
+        self.assertFail('Finish the test')
+
+        # She enters her new journal entry and submits it
+
+        # The page is refreshing and showing the entries
+
+        # The second entry is displayed on top, the first entry on bottom
+
