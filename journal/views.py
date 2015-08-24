@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
 from journal.models import JournalEntry
+from datetime import date
 
 # Create your views here.
 def home_page(request):
@@ -8,4 +9,8 @@ def home_page(request):
         return redirect('/')
 
     journal_entries = JournalEntry.objects.all()
-    return render(request, 'home.html', {'journal_entries': journal_entries})
+    no_entry_for_today = not JournalEntry.objects.filter(date=JournalEntry.get_entry_date()).exists()
+    return render(request, 'home.html', {
+        'journal_entries': journal_entries,
+        'no_entry_for_today': no_entry_for_today
+    })

@@ -90,13 +90,24 @@ class NewJournalEntryTest(LiveServerTestCase):
         send_button = self.get_journal_entry_send_button()
         self.assertIsNone(send_button)
 
-        # Anne is waiting another day to write a new journal entry. Now she can
+        # Anne is waiting another day to write a new journal entry.
         self.date_faker.fake_date(date(2015,5,16))
-        self.assertFail('Finish the test')
 
         # She enters her new journal entry and submits it
+        inputbox = self.get_journal_entry_input()
+        inputbox.send_keys('This is my second journal entry')
+        
+        send_button = self.get_journal_entry_send_button()
+        send_button.click()
 
-        # The page is refreshing and showing the entries
-
+        # The page is refreshing and showing the entries. 
         # The second entry is displayed on top, the first entry on bottom
+        text_elements = get_entry_elements(".entry-text")
+        date_elements = get_entry_elements(".entry-date") 
+
+        assertEqual('This is my second journal entry',text_elements[0].text)
+        assertEqual('This is my first journal entry',text_elements[1].text)
+
+        assertEqual('2015-05-16',date_elements[0].text)
+        assertEqual('2015-05-15',date_elements[1].text)
 

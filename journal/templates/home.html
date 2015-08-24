@@ -5,11 +5,13 @@
     </head>
     <body>
         <h1>Daily Journal</h1>
+        {% if no_entry_for_today %}
         <form method="POST">
             <textarea name="entry_text" id="id_new_journal_entry" placeholder="Enter a new journal entry"></textarea>
             <input type="submit" id="id_submit_journal_entry" value="Submit"/>
             {% csrf_token %}
         </form>
+        {% endif %}
         {% for journal_entry in journal_entries %}
         <p class="entry">
         <span class="entry-date">{{journal_entry.date|date:"Y-m-d"}}</span>

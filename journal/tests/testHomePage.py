@@ -38,3 +38,11 @@ class HomePageTest(TestCase):
 
         self.assertContains(response,'journal entry 1')
         self.assertContains(response,'journal entry 2')
+
+    def test_home_page_does_not_allow_to_enter_journal_entry_when_there_already_is_one_for_this_day(self):
+        JournalEntry.objects.create(text='journal entry of today')
+
+        response = self.client.get('/')
+
+        self.assertNotContains(response,'id_new_journal_entry')
+        self.assertNotContains(response,'id_submit_journal_entry')
