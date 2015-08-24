@@ -2,15 +2,18 @@ from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from datetime import date
+from journal.tests.date_faker import DateFaker
 
 class NewJournalEntryTest(LiveServerTestCase):
     
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
+        self.date_faker = DateFaker()
 
     def tearDown(self):
         self.browser.quit()
+        self.date_faker.reset()
 
 
     def get_entry_elements(self,subclass):
@@ -64,6 +67,9 @@ class NewJournalEntryTest(LiveServerTestCase):
         self.check_for_entry_text_in_entries('This is my brand new diary entry')
 
     def test_can_write_multiple_journal_entries(self):
+        #It is the 15th of May 2015
+        self.date_faker.fake_date(date(2015,5,15))
+
         # Anne wants to write her first daily journal entry. She goes to the homepage
         self.browser.get(self.live_server_url)
 
@@ -85,6 +91,7 @@ class NewJournalEntryTest(LiveServerTestCase):
         self.assertIsNone(send_button)
 
         # Anne is waiting another day to write a new journal entry. Now she can
+        self.date_faker.fake_date(date(2015,5,16))
         self.assertFail('Finish the test')
 
         # She enters her new journal entry and submits it

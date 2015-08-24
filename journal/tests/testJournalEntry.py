@@ -1,6 +1,7 @@
 from django.test import TestCase
 from journal.models import JournalEntry
 from datetime import date,timedelta
+from journal.tests.date_faker import DateFaker
 
 class JournalEntryModelTest(TestCase):
 
@@ -30,11 +31,9 @@ class JournalEntryModelTest(TestCase):
         self.assertEqual(entry.date,date.today())
 
     def test_creating_journal_entry_checks_for_date(self):
-        def mockGetDate():
-            return date(2015,3,15)
-        origGetDate = JournalEntry.get_entry_date
+        date_faker = DateFaker()
         try:
-            JournalEntry.get_entry_date = mockGetDate
+            date_faker.fake_date(date(2015,3,15))
             entry = JournalEntry()
             entry.save()
 
@@ -44,5 +43,5 @@ class JournalEntryModelTest(TestCase):
             entry = saved_journal_entries[0]
             self.assertEqual(entry.date,date(2015,3,15))
         finally:
-            JournalEntry.get_entry_date = origGetDate
+            date_faker.reset()
 
