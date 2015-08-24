@@ -1,6 +1,7 @@
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from datetime import date
 from journal.tests.date_faker import DateFaker
 
@@ -85,13 +86,14 @@ class NewJournalEntryTest(LiveServerTestCase):
         self.check_for_entry_text_in_entries('This is my first journal entry')
 
         # She wants to add another entry, but she can't because she already wrote one for today
-        inputbox = self.get_journal_entry_input()
-        self.assertIsNone(inputbox)
-        send_button = self.get_journal_entry_send_button()
-        self.assertIsNone(send_button)
+        with self.assertRaises(NoSuchElementException):
+            self.get_journal_entry_input()
+        with self.assertRaises(NoSuchElementException):
+            self.get_journal_entry_send_button()
 
         # Anne is waiting another day to write a new journal entry.
         self.date_faker.fake_date(date(2015,5,16))
+        self.browser.get(self.live_server_url)
 
         # She enters her new journal entry and submits it
         inputbox = self.get_journal_entry_input()
@@ -102,12 +104,12 @@ class NewJournalEntryTest(LiveServerTestCase):
 
         # The page is refreshing and showing the entries. 
         # The second entry is displayed on top, the first entry on bottom
-        text_elements = get_entry_elements(".entry-text")
-        date_elements = get_entry_elements(".entry-date") 
+        text_elements = self.get_entry_elements(".entry-text")
+        date_elements = self.get_entry_elements(".entry-date") 
 
-        assertEqual('This is my second journal entry',text_elements[0].text)
-        assertEqual('This is my first journal entry',text_elements[1].text)
+        self.assertEqual('This is my second journal entry',text_elements[0].text)
+        self.assertEqual('This is my first journal entry',text_elements[1].text)
 
-        assertEqual('2015-05-16',date_elements[0].text)
-        assertEqual('2015-05-15',date_elements[1].text)
+        self.assertEqual('2015-05-16',date_elements[0].text)
+        self.assertEqual('2015-05-15',date_elements[1].text)
 
