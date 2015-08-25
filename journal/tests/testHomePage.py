@@ -4,6 +4,7 @@ from journal.views import home_page
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from journal.models import JournalEntry
+from datetime import date
 
 class HomePageTest(TestCase):
 
@@ -46,3 +47,13 @@ class HomePageTest(TestCase):
 
         self.assertNotContains(response,'id_new_journal_entry')
         self.assertNotContains(response,'id_submit_journal_entry')
+
+    def test_home_page_displays_journal_entries_in_descending_order(self):
+        JournalEntry.objects.create(text='first journal entry',date=date(2015,1,1))
+        JournalEntry.objects.create(text='second journal entry',date=date(2015,1,2))
+
+        response = self.client.get('/')
+        index_first_entry = response.content.decode('utf8').index('first journal entry')
+        index_second_entry = response.content.decode('utf8').index('second journal entry')
+        
+        self.assertTrue(index_first_entry > index_second_entry)

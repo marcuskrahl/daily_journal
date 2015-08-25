@@ -8,7 +8,7 @@ def home_page(request):
         JournalEntry.objects.create(text=request.POST['entry_text'])
         return redirect('/')
 
-    journal_entries = JournalEntry.objects.all()
+    journal_entries = JournalEntry.objects.order_by('-date')
     no_entry_for_today = not JournalEntry.objects.filter(date=JournalEntry.get_entry_date()).exists()
     return render(request, 'home.html', {
         'journal_entries': journal_entries,
