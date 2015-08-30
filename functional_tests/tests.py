@@ -109,3 +109,34 @@ class NewJournalEntryTest(LiveServerTestCase):
         self.assertEqual('2015-05-16',date_elements[0].text)
         self.assertEqual('2015-05-15',date_elements[1].text)
 
+    def test_can_write_weekly_journal_entries(self):
+        #Anne writes her first journal entry on the 15th of May 2015
+        self.write_journal_entry_for_date('This is my first journal entry',date(2015,5,15))
+
+        #She also wrote an entry 3 days later
+        self.write_journal_entry_for_date('This is my second journal entry',date(2015,5,18))
+
+        #A whole week has passed. It is time for a weekly journal entry.
+        #When she visits the page, she is prompted to write a weekly journal entry
+        self.date_faker.fake_date(date(2015,5,22))
+        self.browser.get(self.live_server_url)
+
+        #She is prompted to write a weekly journal entry
+        weekly_entry_prompt = self.get_weekly_entry_prompt()
+        self.assertIn('New weekly journal entry due', weekly_entry_prompt.text)
+
+        #She confirms the prompt
+        weekly_entry_prompt.click()
+
+        #She is taken to a page where she can write her weekly journal entry
+        self.assertIn('Weekly Entry', self.browser.title)
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('Weekly Entry', header_text)
+        
+        #There is an input element where she can enter her weekly journal entry.
+        inputbox = self.get_weekly_entry_input()
+        self.assertEqual(inputbox.get_attribute('placeholder'),'Enter a new weekly entry')
+
+        #All previous journal entries are displayed to help her write the entry
+        self.fail('finish test')
+
