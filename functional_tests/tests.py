@@ -34,6 +34,25 @@ class NewJournalEntryTest(LiveServerTestCase):
     def get_journal_entry_send_button(self):
         return self.browser.find_element_by_id('id_submit_journal_entry')
 
+    def write_journal_entry_for_date(self,entry_text,date):
+        #It is the given date 
+        self.date_faker.fake_date(date)
+
+        # Anne wants to write a journal entry. She goes to the homepage
+        self.browser.get(self.live_server_url)
+
+        # She enters the journal entry
+        inputbox = self.get_journal_entry_input()
+        inputbox.send_keys(entry_text)
+
+        # There is a button to submit the entry
+        send_button = self.get_journal_entry_send_button()
+
+        # When she sends the entry, the page updates and her entry is shown as commited
+        send_button.click()
+        self.check_for_entry_text_in_entries(entry_text)
+
+
 
     def test_can_write_daily_entry_and_retrieve_it_later(self): 
         # Anne wants to write her daily journal entry. She goes to the homepage
@@ -68,22 +87,8 @@ class NewJournalEntryTest(LiveServerTestCase):
         self.check_for_entry_text_in_entries('This is my brand new diary entry')
 
     def test_can_write_multiple_journal_entries(self):
-        #It is the 15th of May 2015
-        self.date_faker.fake_date(date(2015,5,15))
-
-        # Anne wants to write her first daily journal entry. She goes to the homepage
-        self.browser.get(self.live_server_url)
-
-        # She enters her first journal entry
-        inputbox = self.get_journal_entry_input()
-        inputbox.send_keys('This is my first journal entry')
-
-        # There is a button to submit the entry
-        send_button = self.get_journal_entry_send_button()
-
-        # When she sends the entry, the page updates and her entry is shown as commited
-        send_button.click()
-        self.check_for_entry_text_in_entries('This is my first journal entry')
+        #Anne writes her first journal entry on the 15th of May 2015
+        self.write_journal_entry_for_date('This is my first journal entry',date(2015,5,15))
 
         # She wants to add another entry, but she can't because she already wrote one for today
         with self.assertRaises(NoSuchElementException):
@@ -92,16 +97,7 @@ class NewJournalEntryTest(LiveServerTestCase):
             self.get_journal_entry_send_button()
 
         # Anne is waiting another day to write a new journal entry.
-        self.date_faker.fake_date(date(2015,5,16))
-        self.browser.get(self.live_server_url)
-
-        # She enters her new journal entry and submits it
-        inputbox = self.get_journal_entry_input()
-        inputbox.send_keys('This is my second journal entry')
-        
-        send_button = self.get_journal_entry_send_button()
-        send_button.click()
-
+        self.write_journal_entry_for_date('This is my second journal entry',date(2015,5,16))
         # The page is refreshing and showing the entries. 
         # The second entry is displayed on top, the first entry on bottom
         text_elements = self.get_entry_elements(".entry-text")
